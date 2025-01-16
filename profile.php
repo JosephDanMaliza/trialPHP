@@ -122,8 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-
-
     @media (max-width: 1000px) {
         .left-column {
             position: fixed;
@@ -167,7 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="row">
-
             <!-- Hamburger Button -->
             <div class="hamburger-btn" onclick="toggleLeftColumn()">&#9776;</div>
 
@@ -194,39 +191,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     style="font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 20px;">Profile</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="../tags/explore.html"
-                                style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #06080F;">
-                                <i class="fa-solid fa-hashtag nav-icon" style="font-size: 24px; color: #06080F;"></i>
-                                <span class="nav-title"
-                                    style="font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 20px;">Tags</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="../notif.html"
-                                style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #06080F;">
-                                <i class="fa-solid fa-bell nav-icon" style="font-size: 24px; color: #06080F;"></i>
-                                <span class="nav-title"
-                                    style="font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 20px;">Notification</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="../bookmarks.html"
-                                style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #06080F">
-                                <i class="fa-solid fa-bookmark nav-icon" style="font-size: 24px; color: #06080F;"></i>
-                                <span class="nav-title"
-                                    style="font-family: Helvetica, Arial, sans-serif; font-weight: normal; font-size: 20px;">Bookmarks</span>
-                            </a>
-                        </li>
+                        <!-- Add other navigation items here -->
                     </ul>
                 </div>
                 <div class="logout-container">
                     <button class="btn-logout">Log Out</button>
                 </div>
             </div>
-            
+
             <!-- Middle Column -->
-                    <div class="col-md-6 middle-column">
+            <div class="col-md-6 middle-column">
                 <!-- Search Bar -->
                 <div class="middle-search-bar">
                     <input type="text" class="form-control" placeholder="Search...">
@@ -278,126 +252,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-                <!--Posts-->
-                            <!-- user -->
-                            <!-- uploaded media -->
-                            <!-- body -->
-                                <!-- bottom buttons -->
-                        <!-- modal large view with edit/delete button -->
-                                            <!-- user -->
-                                            <!-- uploaded media -->
-                                            <!-- body -->
-                                                <!-- bottom buttons -->
-                                            <!-- collapsible comment -->
-                                                <!-- Comments Section -->
-                    
+            <!-- Create Post Button -->
+            <div class="me-3">
+                <div class="create-post-button">
+                    <button class="btn-create-post" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <img src="../assets/icons/edit.svg" alt="Icon" class="button-icon"> Create Post
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <!-- Create Post Button -->
-                <div class="me-3">
-                    <div class="create-post-button">
-                        <button class="btn-create-post" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <img src="../assets/icons/edit.svg" alt="Icon" class="button-icon"> Create Post
-                        </button>
+        <!-- Modals for Edit Profile and Delete Account -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="background-color: #f8f9fa;">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProfileForm" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" value="<?php echo $user['userName']; ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" name="fullName" value="<?php echo $user['firstName'] . ' ' . $user['lastName']; ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="backgroundPhoto" class="form-label">Background Photo</label>
+                                <input type="file" class="form-control" id="backgroundPhoto" name="backgroundPhoto">
+                            </div>
+                            <div class="mb-3">
+                                <label for="profilePhoto" class="form-label">Profile Photo</label>
+                                <input type="file" class="form-control" id="profilePhoto" name="profilePhoto">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Right Column -->
-            
-
-
-                <!-- Footer Section -->
-            <!-- Create post modal -->
-            <!-- Edit Profile Modal -->
-            <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="background-color: #f8f9fa;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="editProfileForm" method="POST" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label for="backgroundPhoto" class="form-label">Background Photo</label>
-                                    <input type="file" class="form-control" id="backgroundPhoto" name="backgroundPhoto" accept=".png, .jpg">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="profilePhoto" class="form-label">Profile Photo</label>
-                                    <input type="file" class="form-control" id="profilePhoto" name="profilePhoto" accept=".png, .jpg">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter new username">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="fullName" class="form-label">Full Name</label>
-                                    <input type="text" class="form-control" id="fullName" name="fullName" placeholder="Enter full name">
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" form="editProfileForm" class="btn btn-primary">Save Changes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Delete Profile Modal -->
-            <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="background-color: #f8f9fa;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteProfileModalLabel">Delete Account</h5>
-                            <button type="button" class="btn btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary btn-secondary"
-                                data-bs-dismiss="modal">No</button>
-                            <button type="button" class="btn btn-primary btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteProfileModal2" data-bs-dismiss="modal">Yes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="deleteProfileModal2" tabindex="-1" aria-labelledby="deleteProfileModal2Label"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="background-color: #f8f9fa;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="deleteProfileModal2Label">Are You Sure?</h5>
-                            <button type="button" class="btn btn-close" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>This is your final chance to cancel. Do you want to proceed?</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn btn-primary" data-bs-dismiss="modal">No</button>
-                            <button type="button" class="btn btn btn-primary btn-danger">Yes, Delete
-                                Permanently</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-           
-
-            <!-- JS Post -->
-            <script src="../assets/js/post.js"></script>
-            <!-- JS Left column -->
-            <script src="../assets/js/leftcolumn.js"></script>
-
-            <!-- Bootstrap Script -->
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-                crossorigin="anonymous"></script>
+        <!-- Bootstrap JS and dependencies -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            function toggleLeftColumn() {
+                document.querySelector('.left-column').classList.toggle('show');
+            }
+        </script>
+    </div>
 </body>
 
 </html>
