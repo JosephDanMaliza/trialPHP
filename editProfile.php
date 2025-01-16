@@ -4,16 +4,71 @@ include("connect.php");
 
 $error = "";
 
+// Check if user is logged in
+if (!isset($_SESSION['userID'])) {
+    header("Location: login.php");
+    exit;
+}
+
 $user_id = $_SESSION['userID'];
 
+// Select the current user details
 $selectQuery = "SELECT * FROM users WHERE userID = '$user_id'";
 $userResult = executeQuery($selectQuery);
 $user = mysqli_fetch_assoc($userResult);
 
-//<--Back to login page if not logged in-->
-if (!isset($_SESSION['userID'])) {
-    header("Location: login.php");
-    exit;
+// Handle form submission for profile updates
+if (isset($_POST['btnUpdate'])) {
+    // Update user profile information
+    $firstName = mysqli_real_escape_string($conn, $_POST['firstName']);
+    $lastName = mysqli_real_escape_string($conn, $_POST['lastName']);
+    $userName = mysqli_real_escape_string($conn, $_POST['userName']);
+
+    // Handle file uploads for profile and background images
+    $profilePhoto = $_FILES['profilePhoto']['name'];
+    $backgroundPhoto = $_FILES['backgroundPhoto']['name'];
+
+    if ($profilePhoto) {
+        // Save profile photo to directory
+        $profilePhotoTmp = $_FILES['profilePhoto']['tmp_name'];
+        $profilePhotoPath = "uploads/" . basename($profilePhoto);
+        move_uploaded_file($profilePhotoTmp, $profilePhotoPath);
+    } else {
+        $profilePhotoPath = $user['profileImage']; // Keep existing image if none uploaded
+    }
+
+    if ($backgroundPhoto) {
+        // Save background photo to directory
+        $backgroundPhotoTmp = $_FILES['backgroundPhoto']['tmp_name'];
+        $backgroundPhotoPath = "uploads/" . basename($backgroundPhoto);
+        move_uploaded_file($backgroundPhotoTmp, $backgroundPhotoPath);
+    } else {
+        $backgroundPhotoPath = $user['backgroundImage']; // Keep existing background if none uploaded
+    }
+
+    // Update user information in the database
+    $updateQuery = "UPDATE users SET 
+                    firstName = '$firstName', 
+                    lastName = '$lastName', 
+                    userName = '$userName', 
+                    profileImage = '$profilePhotoPath', 
+                    backgroundImage = '$backgroundPhotoPath' 
+                    WHERE userID = '$user_id'";
+
+    $updateResult = executeQuery($updateQuery);
+    
+    if ($updateResult) {
+        // If the update was successful, refresh session variables and redirect
+        $_SESSION['userName'] = $userName;
+        $_SESSION['firstName'] = $firstName;
+        $_SESSION['lastName'] = $lastName;
+        $_SESSION['profileImage'] = $profilePhotoPath;
+        $_SESSION['backgroundImage'] = $backgroundPhotoPath;
+        header("Location: profile.php"); // Redirect to profile page after successful update
+        exit;
+    } else {
+        $error = "There was an error updating your profile. Please try again.";
+    }
 }
 ?>
 
@@ -42,26 +97,22 @@ if (!isset($_SESSION['userID'])) {
             <div class="profile-section position-relative">
                 <div class="background">
                     <!-- Dynamically display background image -->
-                    <img src="path_to_your_image_folder/<?php echo $user['backgroundImage']; ?>" alt="Background Picture">
+                    <img src="uploads/<?php echo $user['backgroundImage']; ?>" alt="Background Picture">
                 </div>
                 <div class="profile-pic1" style="margin-top: -85px;">
                     <!-- Dynamically display profile image -->
-                    <img src="path_to_your_image_folder/<?php echo $user['profileImage']; ?>" alt="Profile Picture"
-                        style="width: 150px; border-radius: 50%;">
+                    <img src="uploads/<?php echo $user['profileImage']; ?>" alt="Profile Picture" style="width: 150px; border-radius: 50%;">
                 </div>
 
                 <div class="prof-edit-delete pt-8 text-end">
                     <div class="dropdown" style="width: 100%;">
-                        <button class="btn btn-secondary dropdown-toggle" type="button"
-                            data-bs-toggle="dropdown" aria-expanded="false"
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
                             style="border-radius: 20px; font-family: 'Helvetica Rounded'; border-color: #FFFF; background-color: #FFFF; color: #808080;">
                             <span class="ellipsis">...</span>
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#editProfileModal">Edit Profile</a></li>
-                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
-                                    data-bs-target="#deleteProfileModal">Delete Account</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</a></li>
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">Delete Account</a></li>
                         </ul>
                     </div>
                 </div>
@@ -77,9 +128,8 @@ if (!isset($_SESSION['userID'])) {
             </div>
         </div>
 
-            <!-- Edit Profile Modal -->
-        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
-            aria-hidden="true">
+        <!-- Edit Profile Modal -->
+        <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content" style="background-color: #f8f9fa;">
                     <div class="modal-header">
@@ -98,15 +148,15 @@ if (!isset($_SESSION['userID'])) {
                             </div>
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" name="userName" value="<?php echo htmlspecialchars($_SESSION['userName']); ?>" placeholder="Enter new username">
+                                <input type="text" class="form-control" name="userName" value="<?php echo htmlspecialchars($user['userName']); ?>" placeholder="Enter new username">
                             </div>
                             <div class="mb-3">
                                 <label for="fullName" class="form-label">Full Name</label>
-                                <input type="text" class="form-control" name="firstName" value="<?php echo htmlspecialchars($_SESSION['firstName']); ?>" placeholder="Enter full name">
+                                <input type="text" class="form-control" name="firstName" value="<?php echo htmlspecialchars($user['firstName']); ?>" placeholder="Enter full name">
                             </div>
                             <div class="mb-3">
                                 <label for="lastName" class="form-label">Last Name</label>
-                                <input type="text" class="form-control" name="lastName" value="<?php echo htmlspecialchars($_SESSION['lastName']); ?>" placeholder="Enter last name">
+                                <input type="text" class="form-control" name="lastName" value="<?php echo htmlspecialchars($user['lastName']); ?>" placeholder="Enter last name">
                             </div>
                             <div class="mb-3">
                                 <button type="submit" name="btnUpdate" class="btn btn-primary">Save Changes</button>
@@ -120,58 +170,10 @@ if (!isset($_SESSION['userID'])) {
             </div>
         </div>
 
-    <!-- Delete Profile Modal -->
-    <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background-color: #f8f9fa;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteProfileModalLabel">Delete Account</h5>
-                    <button type="button" class="btn btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete your account? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary btn-secondary"
-                        data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-primary btn-danger" data-bs-toggle="modal"
-                        data-bs-target="#deleteProfileModal2" data-bs-dismiss="modal">Yes</button>
-                </div>
-            </div>
-        </div>
     </div>
-    <div class="modal fade" id="deleteProfileModal2" tabindex="-1" aria-labelledby="deleteProfileModal2Label"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content" style="background-color: #f8f9fa;">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteProfileModal2Label">Are You Sure?</h5>
-                    <button type="button" class="btn btn-close" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>This is your final chance to cancel. Do you want to proceed?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn btn-primary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn btn-primary btn-danger">Yes, Delete
-                        Permanently</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JS Post -->
-    <script src="../assets/js/post.js"></script>
-    <!-- JS Left column -->
-    <script src="../assets/js/leftcolumn.js"></script>
 
     <!-- Bootstrap Script -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
 
 </html>
