@@ -2,6 +2,8 @@
 session_start();
 include("connect.php");
 
+kz
+
 $error = "";
 
 // Check if user is logged in
